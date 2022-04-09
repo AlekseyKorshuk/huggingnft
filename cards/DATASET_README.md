@@ -52,6 +52,7 @@ Models and datasets can be removed from the site at the request of the copyright
 NFT images dataset for unconditional generation.
 NFT collection available [here](https://opensea.io/collection/USERNAME).
 Model is available [here](https://huggingface.co/huggingnft/USERNAME).
+Check Space: [link](https://huggingface.co/spaces/AlekseyKorshuk/huggingnft).
 
 ### Supported Tasks and Leaderboards
 
@@ -144,7 +145,7 @@ The data fields are the same among all splits.
 ### Citation Information
 
 ```
-@InProceedings{huggingartists,
+@InProceedings{huggingnft,
     author={Aleksey Korshuk}
     year=2022
 }
