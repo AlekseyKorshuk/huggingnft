@@ -67,6 +67,7 @@ def main(args):
         "name": collection[0]["collection"]["name"],
     }
 
+
     download_images(collection)
 
     images = [f"images/{f}" for f in listdir("images") if isfile(join("images", f))]
