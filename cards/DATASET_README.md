@@ -54,7 +54,6 @@ NFT images dataset for unconditional generation.
 NFT collection available [here](https://opensea.io/collection/USERNAME).
 
 Model is available [here](https://huggingface.co/huggingnft/USERNAME).
-Check Space: [link](https://huggingface.co/spaces/AlekseyKorshuk/huggingnft).
 
 Check Space: [link](https://huggingface.co/spaces/AlekseyKorshuk/huggingnft).
 
