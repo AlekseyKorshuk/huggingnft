@@ -271,11 +271,11 @@ def main(args):
             torch.save(generator.state_dict(), f"{args.output_dir}/generator_epoch_{epoch}.pth")
             torch.save(discriminator.state_dict(), f"{args.output_dir}/discriminator_epoch_{epoch}.pth")
 
-            # Calculate FID metric
-            fid = calculate_fretchet(real_cpu, fake, model.to(accelerator.device))
-            logger.info(f"FID: {fid}")
-            if accelerator.is_local_main_process and args.wandb:
-                wandb.log({"FID": fid})
+            # # Calculate FID metric
+            # fid = calculate_fretchet(real_cpu, fake, model.to(accelerator.device))
+            # logger.info(f"FID: {fid}")
+            # if accelerator.is_local_main_process and args.wandb:
+            #     wandb.log({"FID": fid})
 
     # Optionally push to hub
     if accelerator.is_main_process and args.push_to_hub:
