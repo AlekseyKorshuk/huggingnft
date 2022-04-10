@@ -153,6 +153,7 @@ def main(args):
         return examples
 
     transformed_dataset = dataset.with_transform(transforms)
+    transformed_dataset["train"] = transformed_dataset["train"].remove_columns(['id', 'token_metadata', 'image_original_url'])
 
     dataloader = DataLoader(
         transformed_dataset["train"], batch_size=args.batch_size, shuffle=True, num_workers=args.num_workers
