@@ -374,6 +374,8 @@ if __name__ == "__main__":
         assert args.output_dir is not None, "Need an `output_dir` to create a repo when `--push_to_hub` is passed."
         assert args.model_name is not None, "Need a `model_name` to create a repo when `--push_to_hub` is passed."
 
+    if args.num_channels == 3:
+        args.model_name = f"{args.model_name}-rgb"
     if args.output_dir is not None:
         os.makedirs(args.output_dir, exist_ok=True)
     main(args)
