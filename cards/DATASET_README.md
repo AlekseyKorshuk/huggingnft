@@ -6,6 +6,8 @@ tags:
 - gan
 - image
 - images
+task: unconditional-image-generation
+license: mit
 ---
 
 # Dataset Card
