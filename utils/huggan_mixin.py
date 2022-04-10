@@ -5,8 +5,7 @@ import os
 
 from huggingface_hub import PyTorchModelHubMixin, HfApi, HfFolder, Repository
 
-TEMPLATE_MODEL_CARD_PATH = Path(__file__).parent.absolute() / 'cards' / 'MODEL_README.md'
-print(TEMPLATE_MODEL_CARD_PATH)
+TEMPLATE_MODEL_CARD_PATH = Path(__file__).parent.parent.absolute() / 'cards' / 'MODEL_README.md'
 
 
 class HugGANModelHubMixin(PyTorchModelHubMixin):
