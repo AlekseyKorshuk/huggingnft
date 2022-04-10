@@ -232,8 +232,11 @@ def main(args):
             generator.zero_grad()
             label.fill_(real_label)  # fake labels are real for generator cost
             output = discriminator(fake)
-            # minimize loss but also maximize alpha channel
-            loss_g = criterion(output, label) + fake[:, -1].mean()
+            if args.num_channels == 4:
+                # minimize loss but also maximize alpha channel
+                loss_g = criterion(output, label) + fake[:, -1].mean()
+            else:
+                loss_g = criterion(output, label)
             accelerator.backward(loss_g)
             generator_optimizer.step()
 
