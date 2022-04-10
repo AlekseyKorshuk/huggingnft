@@ -3,3 +3,8 @@ aiofiles
 datasets
 asyncio
 requests
+torch
+torchvision
+selenium
+accelerate
+wandb

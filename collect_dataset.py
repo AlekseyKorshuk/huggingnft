@@ -7,9 +7,12 @@ import argparse
 from os import listdir
 from os.path import isfile, join
 from datasets import load_dataset
+import json
+from selenium import webdriver
+import shutil
 
 headers = {
-    "Accept": "application/json",
+    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
     "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.4 Safari/605.1.15"
 }
 
@@ -21,6 +24,20 @@ def parse_collection(collection_name):
         url = f"https://api.opensea.io/api/v1/assets?collection={collection_name}&format=json&limit=200&cursor={cursor}"
         response = requests.request("GET", url, headers=headers)
         result = response.json()
+        collection = collection + result["assets"]
+        cursor = result["next"]
+    return collection
+
+
+def parse_collection_selenium(collection_name, driver_path):
+    driver = webdriver.Chrome(executable_path=driver_path)
+    collection = []
+    cursor = ""
+    while cursor is not None:
+        url = f"https://api.opensea.io/api/v1/assets?collection={collection_name}&format=json&limit=200&cursor={cursor}"
+        driver.get(url)
+        pre = driver.find_element_by_tag_name("pre").text
+        result = json.loads(pre)
         collection = collection + result["assets"]
         cursor = result["next"]
     return collection
@@ -57,16 +74,14 @@ def download_images(collection):
 
 
 def main(args):
-    collection = parse_collection(args.collection_name)
-
-    collection_data = {
-        "banner_image_url": collection[0]["collection"]["banner_image_url"],
-        "description": collection[0]["collection"]["description"],
-        "featured_image_url": collection[0]["collection"]["featured_image_url"],
-        "image_url": collection[0]["collection"]["image_url"],
-        "name": collection[0]["collection"]["name"],
-    }
-
+    try:
+        shutil.rmtree("images")
+    except:
+        pass
+    if args.use_selenium:
+        collection = parse_collection_selenium(args.collection_name, args.driver_path)
+    else:
+        collection = parse_collection(args.collection_name)
 
     download_images(collection)
 
@@ -98,6 +113,13 @@ def main(args):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--collection_name", type=str, help="Name of OpenSea collection")
+    parser.add_argument("--collection_name", type=str, default="cryptopunks", help="Name of OpenSea collection")
+    parser.add_argument(
+        "--use_selenium",
+        action="store_true",
+        help="Whether to use selenium Chrome driver for parsing.",
+    )
+    parser.add_argument("--driver_path", type=str, default="./chromedriver", help="Path to Chrome driver")
+
     args = parser.parse_args()
     main(args)
