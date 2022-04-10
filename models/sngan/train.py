@@ -361,7 +361,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--num_channels",
         type=int,
-        default=4,
+        default=3,
         help="Number of channels to use",
     )
     args = parser.parse_args()
