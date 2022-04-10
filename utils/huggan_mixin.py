@@ -8,6 +8,7 @@ from huggingface_hub import PyTorchModelHubMixin, HfApi, HfFolder, Repository
 TEMPLATE_MODEL_CARD_PATH = Path(__file__).parent.absolute() / 'cards' / 'MODEL_README.md'
 print(TEMPLATE_MODEL_CARD_PATH)
 
+
 class HugGANModelHubMixin(PyTorchModelHubMixin):
     """A mixin to push PyTorch Models to the Hugging Face Hub. This
     mixin was adapted from the PyTorchModelHubMixin to also push a template
@@ -15,20 +16,20 @@ class HugGANModelHubMixin(PyTorchModelHubMixin):
     """
 
     def push_to_hub(
-        self,
-        repo_path_or_name: Optional[str] = None,
-        repo_url: Optional[str] = None,
-        commit_message: Optional[str] = "Add model",
-        organization: Optional[str] = None,
-        private: Optional[bool] = None,
-        api_endpoint: Optional[str] = None,
-        use_auth_token: Optional[Union[bool, str]] = None,
-        git_user: Optional[str] = None,
-        git_email: Optional[str] = None,
-        config: Optional[dict] = None,
-        skip_lfs_files: bool = False,
-        default_model_card: Optional[str] = TEMPLATE_MODEL_CARD_PATH,
-        model_name: Optional[str] = None,
+            self,
+            repo_path_or_name: Optional[str] = None,
+            repo_url: Optional[str] = None,
+            commit_message: Optional[str] = "Add model",
+            organization: Optional[str] = None,
+            private: Optional[bool] = None,
+            api_endpoint: Optional[str] = None,
+            use_auth_token: Optional[Union[bool, str]] = None,
+            git_user: Optional[str] = None,
+            git_email: Optional[str] = None,
+            config: Optional[dict] = None,
+            skip_lfs_files: bool = False,
+            default_model_card: Optional[str] = TEMPLATE_MODEL_CARD_PATH,
+            model_name: Optional[str] = None,
     ) -> str:
         """
         Upload model checkpoint or tokenizer files to the Hub while
@@ -97,17 +98,17 @@ class HugGANModelHubMixin(PyTorchModelHubMixin):
             repo_path_or_name = repo_url.split("/")[-1]
 
         # If no URL is passed and there's no path to a directory containing files, create a repo
-        if repo_url is None and not os.path.exists(repo_path_or_name):
-            repo_id = Path(repo_path_or_name).name
-            if organization:
-                repo_id = f"{organization}/{repo_id}"
-            repo_url = HfApi(endpoint=api_endpoint).create_repo(
-                repo_id=repo_id,
-                token=token,
-                private=private,
-                repo_type=None,
-                exist_ok=True,
-            )
+        # if repo_url is None and not os.path.exists(repo_path_or_name):
+        repo_id = Path(repo_path_or_name).name
+        if organization:
+            repo_id = f"{organization}/{repo_id}"
+        repo_url = HfApi(endpoint=api_endpoint).create_repo(
+            repo_id=repo_id,
+            token=token,
+            private=private,
+            repo_type=None,
+            exist_ok=True,
+        )
 
         repo = Repository(
             repo_path_or_name,
@@ -117,6 +118,7 @@ class HugGANModelHubMixin(PyTorchModelHubMixin):
             git_email=git_email,
             skip_lfs_files=skip_lfs_files
         )
+
         repo.git_pull(rebase=True)
 
         # Save the files in the cloned repo
