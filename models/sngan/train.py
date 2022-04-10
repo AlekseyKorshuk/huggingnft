@@ -132,17 +132,21 @@ def main(args):
 
     dataset = load_dataset(args.dataset)
 
+    norm = [(0.5, 0.5, 0.5), (0.5, 0.5, 0.5)]
+    if args.num_channels == 4:
+        norm = [(0.5, 0.5, 0.5, 0.5), (0.5, 0.5, 0.5, 0.5)]
     transform = Compose(
         [
             Resize(args.image_size),
             CenterCrop(args.image_size),
             ToTensor(),
-            Normalize((0.5, 0.5, 0.5, 0.5), (0.5, 0.5, 0.5, 0.5)),
+            Normalize(norm[0], norm[1]),
         ]
     )
 
     def transforms(examples):
-        examples["pixel_values"] = [transform(image.convert("RGBA")) for image in examples["image"]]
+        examples["pixel_values"] = [transform(image.convert("RGBA" if args.num_channels == 4 else "RGB")) for image in
+                                    examples["image"]]
 
         del examples["image"]
 
@@ -354,8 +358,13 @@ if __name__ == "__main__":
         default=50,
         help="Number of steps between each logging",
     )
+    parser.add_argument(
+        "--num_channels",
+        type=int,
+        default=4,
+        help="Number of channels to use",
+    )
     args = parser.parse_args()
-    args.num_channels = 4
     args.image_size = 64
     if args.push_to_hub:
         assert args.output_dir is not None, "Need an `output_dir` to create a repo when `--push_to_hub` is passed."
