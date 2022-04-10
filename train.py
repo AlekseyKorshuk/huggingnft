@@ -282,6 +282,7 @@ def main(args):
         generator.push_to_hub(
             repo_path_or_name=f"{args.output_dir}/{args.model_name}",
             organization=args.organization_name,
+            model_name=args.model_name
         )
 
 
