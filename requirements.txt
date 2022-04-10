@@ -9,3 +9,4 @@ selenium
 accelerate
 wandb
 huggingface-hub
+scipy
