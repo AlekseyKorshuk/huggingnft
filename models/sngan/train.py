@@ -1,5 +1,3 @@
-# Note - training loop and architectures are modified from https://github.com/pytorch/examples/blob/master/dcgan/main.py
-
 import argparse
 import csv
 import logging
@@ -19,11 +17,12 @@ from torchvision.transforms import (CenterCrop, Compose, Normalize, Resize, ToTe
 from datasets import load_dataset
 import tqdm
 from accelerate import Accelerator
-from utils.metrics.fid_score import calculate_fretchet
 from utils.metrics.inception import InceptionV3
 from utils.huggan_mixin import HugGANModelHubMixin
 
 logger = logging.getLogger(__name__)
+
+model_card = Path(__file__).parent.parent.parent.absolute() / 'cards' / 'SNGAN_MODEL_README.md'
 
 
 class AverageMeter:
@@ -282,7 +281,8 @@ def main(args):
         generator.push_to_hub(
             repo_path_or_name=f"{args.output_dir}/{args.model_name}",
             organization=args.organization_name,
-            model_name=args.model_name
+            model_name=args.model_name,
+            default_model_card=model_card
         )
 
 
