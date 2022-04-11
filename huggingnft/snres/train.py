@@ -85,71 +85,6 @@ class Generator(nn.Module, HugGANModelHubMixin):
         return output
 
 
-# Generator (for generating fake images)
-class NewGenerator(nn.Module, HugGANModelHubMixin):
-
-    # z_dim : noise vector dimension
-    # output_channel : tnumber of channels of the output image, it is 1 for MNIST(black and white) dataset.
-    # hidden_dimension : inner dimension of the generator model
-
-    def __init__(self,  output_channel=4, z_dimension=100, hidden_dimension=64):
-        super(Generator, self).__init__()
-
-        self.z_dimension = z_dimension
-
-        # Building the neural network
-        self.model = nn.Sequential(
-            self.make_gen_block(z_dimension, hidden_dimension * 2),
-            self.make_gen_block(hidden_dimension * 2, hidden_dimension * 4),
-            self.make_gen_block(hidden_dimension * 4, hidden_dimension * 8, stride=1),
-            self.make_gen_block(hidden_dimension * 8, hidden_dimension * 4, stride=1),
-            self.make_gen_block(hidden_dimension * 4, hidden_dimension * 2, stride=1),
-            self.make_gen_block(hidden_dimension * 2, output_channel, kernel_size=4, final_layer=True),
-        )
-
-    # building neural block
-    def make_gen_block(self, input_channels, output_channels, kernel_size=3, stride=2, final_layer=False):
-
-        # input_channels : number of input channel
-        # output_channels : number of output channel
-        # kernel_size : size of convolutional filter
-        # stride : stride of the convolution
-        # final_layer : boolean value, true if it is the final layer and false otherwise
-
-        if not final_layer:
-            return nn.Sequential(
-                nn.ConvTranspose2d(input_channels, output_channels, kernel_size, stride=stride),
-                nn.BatchNorm2d(output_channels),
-                nn.ReLU(inplace=True)
-            )
-
-        # Final Layer
-        else:
-            return nn.Sequential(
-                nn.ConvTranspose2d(input_channels, output_channels, kernel_size, stride),
-                nn.Tanh()
-            )
-
-    # Function for completing a forward pass of the generator: Given a noise tensor, returns generated images.
-    def forward(self, noise):
-
-        # noise: a noise tensor with dimensions (n_samples, z_dimension)
-
-        # a noise with width = 1, height = 1, number of channels = z_dimension, number of samples = len(noise)
-        x = noise.view(len(noise), self.z_dimension, 1, 1)
-        return self.model(x)
-
-    # Function for creating noise vectors: Given the dimensions (n_samples, z_dim) creates a tensor of that shape filled with random numbers
-    # from the normal distribution
-    def get_noise(self, n_samples, device='cpu'):
-
-        # n_samples: the number of samples to generate, a scalar
-        # z_dimension: the dimension of the noise vector, a scalar
-        # device: the device type (cpu / cuda)
-
-        return torch.randn(n_samples, self.z_dimension, device=device)
-
-
 class Discriminator(nn.Module):
     def __init__(self, num_channels, discriminator_hidden_size):
         super(Discriminator, self).__init__()
@@ -159,15 +94,12 @@ class Discriminator(nn.Module):
             nn.LeakyReLU(0.2, inplace=True),
             # state size. (discriminator_hidden_size) x 32 x 32
             spectral_norm(nn.Conv2d(discriminator_hidden_size, discriminator_hidden_size * 2, 4, 2, 1, bias=False)),
-            nn.BatchNorm2d(discriminator_hidden_size * 2),
             nn.LeakyReLU(0.2, inplace=True),
             # state size. (discriminator_hidden_size*2) x 16 x 16
             spectral_norm(nn.Conv2d(discriminator_hidden_size * 2, discriminator_hidden_size * 4, 4, 2, 1, bias=False)),
-            nn.BatchNorm2d(discriminator_hidden_size * 4),
             nn.LeakyReLU(0.2, inplace=True),
             # state size. (discriminator_hidden_size*4) x 8 x 8
             spectral_norm(nn.Conv2d(discriminator_hidden_size * 4, discriminator_hidden_size * 8, 4, 2, 1, bias=False)),
-            nn.BatchNorm2d(discriminator_hidden_size * 8),
             nn.LeakyReLU(0.2, inplace=True),
             # state size. (discriminator_hidden_size*8) x 4 x 4
             spectral_norm(nn.Conv2d(discriminator_hidden_size * 8, 1, 4, 1, 0, bias=False)),
@@ -178,49 +110,6 @@ class Discriminator(nn.Module):
         output = self.model(input)
         return output.view(-1, 1).squeeze(1)
 
-
-# Discriminator
-class NewDiscriminator(nn.Module):
-
-    # im_chan :  number of output channel (1 channel for MNIST dataset which has balck and white image)
-    # hidden_dim : number of inner channel
-
-    def __init__(self, im_chan=4, hidden_dim=16):
-        super(Discriminator, self).__init__()
-        self.model = nn.Sequential(
-            self.make_disc_block(im_chan, hidden_dim * 2, stride=1),
-            self.make_disc_block(hidden_dim * 2, hidden_dim * 4),
-            self.make_disc_block(hidden_dim * 4, hidden_dim * 2),
-
-            self.make_disc_block(hidden_dim * 2, 1, kernel_size=4, final_layer=True),
-        )
-
-
-    # Build the neural block
-    def make_disc_block(self, input_channels, output_channels, kernel_size=3, stride=2, final_layer=False):
-
-        # input_channels : number of input channels
-        # output_channels : number of output channels
-        # kernel_size : the size of each convolutional filter
-        # stride : the stride of the convolution
-        # final_layer : a boolean, true if it is the final layer and false otherwise
-
-        if not final_layer:
-            return nn.Sequential(
-                nn.utils.spectral_norm(nn.Conv2d(input_channels, output_channels, kernel_size, stride)),
-                nn.BatchNorm2d(output_channels),
-                nn.LeakyReLU(0.2, inplace=True)
-            )
-        else: # Final Layer
-            return nn.Sequential(
-                nn.utils.spectral_norm(nn.Conv2d(input_channels, output_channels, kernel_size, stride))
-            )
-
-    # Function for completing a forward pass of the discriminator: Given an image tensor, returns a 1-dimension tensor representing fake/real.
-    def forward(self, image):
-        # image: a flattened image tensor
-        disc_pred = self.model(image)
-        return disc_pred.view(len(disc_pred), -1)
 
 def main(args):
     # Initialize the accelerator. We will let the accelerator handle device placement for us in this example.
@@ -282,7 +171,7 @@ def main(args):
     discriminator = Discriminator(args.num_channels, args.discriminator_hidden_size).to(accelerator.device)
     discriminator.apply(weights_init)
 
-    criterion = nn.BCELoss()    # nn.BCELoss
+    criterion = nn.BCELoss()
 
     fixed_noise = torch.randn(args.batch_size, args.latent_dim, 1, 1, device=accelerator.device)
     real_label = 1
