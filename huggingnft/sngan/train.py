@@ -156,6 +156,7 @@ class Discriminator(nn.Module):
         self.model = nn.Sequential(
             # input is (num_channels) x 64 x 64
             spectral_norm(nn.Conv2d(num_channels, discriminator_hidden_size, 4, 2, 1, bias=False)),
+            nn.BatchNorm2d(discriminator_hidden_size),
             nn.LeakyReLU(0.2, inplace=True),
             # state size. (discriminator_hidden_size) x 32 x 32
             spectral_norm(nn.Conv2d(discriminator_hidden_size, discriminator_hidden_size * 2, 4, 2, 1, bias=False)),
