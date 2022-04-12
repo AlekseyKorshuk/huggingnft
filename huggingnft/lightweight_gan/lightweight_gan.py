@@ -23,7 +23,7 @@ from torchvision import transforms
 from torchvision.utils import save_image
 from kornia.filters import filter2d
 
-from .diff_augment import DiffAugment
+from diff_augment import DiffAugment
 
 from tqdm import tqdm
 from einops import rearrange, reduce, repeat
