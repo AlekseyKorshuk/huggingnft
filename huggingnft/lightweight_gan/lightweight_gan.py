@@ -10,6 +10,7 @@ from contextlib import contextmanager, ExitStack
 from pathlib import Path
 from shutil import rmtree
 
+import requests
 import torch
 from torch.optim import Adam
 from torch import nn, einsum
@@ -23,7 +24,7 @@ from torchvision import transforms
 from torchvision.utils import save_image
 from kornia.filters import filter2d
 
-from diff_augment import DiffAugment
+from huggingnft.lightweight_gan.diff_augment import DiffAugment
 
 from tqdm import tqdm
 from einops import rearrange, reduce, repeat
@@ -42,6 +43,7 @@ from typing import Optional
 # NUM_CORES = multiprocessing.cpu_count()
 EXTS = ['jpg', 'jpeg', 'png']
 PYTORCH_WEIGHTS_NAME = 'model.pt'
+CONFIG_NAME = 'config.json'
 
 
 # helpers
@@ -208,7 +210,7 @@ class SumBranches(nn.Module):
         return sum(map(lambda fn: fn(x), self.branches))
 
 
-class Blur(nn.Module):
+class Fuzziness(nn.Module):
     def __init__(self):
         super().__init__()
         f = torch.Tensor([1, 2, 1])
@@ -218,6 +220,9 @@ class Blur(nn.Module):
         f = self.f
         f = f[None, None, :] * f[None, :, None]
         return filter2d(x, f, normalized=True)
+
+
+Blur = nn.Identity
 
 
 # attention
@@ -1051,7 +1056,7 @@ class Trainer():
         global Blur
 
         norm_class = nn.SyncBatchNorm if self.syncbatchnorm else nn.BatchNorm2d
-        Blur = nn.Identity if not self.antialias else Blur
+        Blur = nn.Identity if not self.antialias else Fuzziness
 
         # instantiate GAN
 
@@ -1074,8 +1079,12 @@ class Trainer():
     def write_config(self):
         self.config_path.write_text(json.dumps(self.config()))
 
-    def load_config(self):
-        config = self.config() if not self.config_path.exists() else json.loads(self.config_path.read_text())
+    def load_config(self, remote_path=None):
+        config_path = self.config_path
+        if remote_path is not None:
+            config_path = remote_path
+        config = self.config() if not config_path.exists() else json.loads(config_path.read_text())
+
         self.image_size = config['image_size']
         self.transparent = config['transparent']
         self.syncbatchnorm = config['syncbatchnorm']
@@ -1400,7 +1409,7 @@ class Trainer():
         # regular
         if 'default' in types:
             for i in tqdm(range(num_image_tiles), desc='Saving generated default images'):
-                latents = torch.randn(1, latent_dim, device=self.accelerator.device)
+                latents = torch.randn(1, latent_dim, device="cpu")
                 generated_image = self.generate_(self.GAN.G, latents)
                 path = str(self.results_dir / dir_name / f'{str(num)}-{str(i)}.{ext}')
                 save_image(generated_image[0], path, nrow=1)
@@ -1408,7 +1417,7 @@ class Trainer():
         # moving averages
         if 'ema' in types:
             for i in tqdm(range(num_image_tiles), desc='Saving generated EMA images'):
-                latents = torch.randn(1, latent_dim, device=self.accelerator.device)
+                latents = torch.randn(1, latent_dim, device="cpu")
                 generated_image = self.generate_(self.GAN.GE, latents)
                 path = str(self.results_dir / dir_name / f'{str(num)}-{str(i)}-ema.{ext}')
                 save_image(generated_image[0], path, nrow=1)
@@ -1576,19 +1585,19 @@ class Trainer():
     def load(self, num=-1):
         self.load_config()
 
-        name = num
+        model_path = self.model_name(num)
         if num == -1:
-            checkpoints = self.get_checkpoints()
+            model_path, config_path = self.get_remote_checkpoints()
+            self.load_config()
 
-            if not exists(checkpoints):
+            if not exists(model_path):
                 return
 
-            name = checkpoints[-1]
-            print(f'continuing from previous epoch - {name}')
+            print(f'continuing from previous epoch - {model_path}')
 
-        self.steps = name * self.save_every
+        # self.steps = name * self.save_every
 
-        load_data = torch.load(self.model_name(name))
+        load_data = torch.load(model_path, map_location=torch.device('cpu'))
 
         try:
             self.GAN.load_state_dict(load_data['GAN'])
@@ -1605,3 +1614,13 @@ class Trainer():
             return None
 
         return saved_nums
+
+    def get_remote_checkpoints(self):
+        model_path, config_path = None, None
+        try:
+            config_path = hf_hub_download(f"{self.organization_name}/{self.name}", CONFIG_NAME)
+            model_path = hf_hub_download(f"{self.organization_name}/{self.name}", PYTORCH_WEIGHTS_NAME)
+        except requests.exceptions.HTTPError:
+            return model_path, config_path
+
+        return model_path, config_path
