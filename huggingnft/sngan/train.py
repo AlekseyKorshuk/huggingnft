@@ -487,6 +487,7 @@ if __name__ == "__main__":
         help="Number of channels to use",
     )
     args = parser.parse_args()
+    args.mixed_precision = "no"
     args.image_size = 64
     if args.push_to_hub:
         assert args.output_dir is not None, "Need an `output_dir` to create a repo when `--push_to_hub` is passed."

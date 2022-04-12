@@ -5,7 +5,7 @@ import os
 
 from huggingface_hub import PyTorchModelHubMixin, HfApi, HfFolder, Repository
 
-TEMPLATE_MODEL_CARD_PATH = Path(__file__).parent.parent.absolute() / 'cards' / 'MODEL_README.md'
+from huggingnft import TEMPLATE_MODEL_CARD_PATH
 
 
 class HugGANModelHubMixin(PyTorchModelHubMixin):
@@ -97,17 +97,17 @@ class HugGANModelHubMixin(PyTorchModelHubMixin):
             repo_path_or_name = repo_url.split("/")[-1]
 
         # If no URL is passed and there's no path to a directory containing files, create a repo
-        # if repo_url is None and not os.path.exists(repo_path_or_name):
-        repo_id = Path(repo_path_or_name).name
-        if organization:
-            repo_id = f"{organization}/{repo_id}"
-        repo_url = HfApi(endpoint=api_endpoint).create_repo(
-            repo_id=repo_id,
-            token=token,
-            private=private,
-            repo_type=None,
-            exist_ok=True,
-        )
+        if repo_url is None and not os.path.exists(repo_path_or_name):
+            repo_id = Path(repo_path_or_name).name
+            if organization:
+                repo_id = f"{organization}/{repo_id}"
+            repo_url = HfApi(endpoint=api_endpoint).create_repo(
+                repo_id=repo_id,
+                token=token,
+                private=private,
+                repo_type=None,
+                exist_ok=True,
+            )
 
         repo = Repository(
             repo_path_or_name,
@@ -125,7 +125,7 @@ class HugGANModelHubMixin(PyTorchModelHubMixin):
 
         model_card_path = Path(repo_path_or_name) / 'README.md'
         if not model_card_path.exists():
-            model_card_path.write_text(TEMPLATE_MODEL_CARD_PATH.read_text().replace("USERNAME", model_name))
+            model_card_path.write_text(default_model_card.read_text().replace("USERNAME", model_name))
 
         # Commit and push!
         repo.git_add()
