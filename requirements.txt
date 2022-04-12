@@ -10,3 +10,9 @@ accelerate
 wandb
 huggingface-hub
 scipy
+kornia
+einops
+adabelief-pytorch
+pytorch-fid
+fire
+retry
