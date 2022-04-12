@@ -1588,7 +1588,7 @@ class Trainer():
         model_path = self.model_name(num)
         if num == -1:
             model_path, config_path = self.get_remote_checkpoints()
-            self.load_config()
+            self.load_config(config_path)
 
             if not exists(model_path):
                 return
