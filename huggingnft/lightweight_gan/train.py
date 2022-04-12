@@ -68,7 +68,7 @@ def run_training(model_args, data, load_from, new, num_train_steps, name, seed):
 def train_from_folder(
         dataset_name='huggan/CelebA-faces',
         data='./data',
-        results_dir='./results',
+        results_dir='./huggingnft',
         models_dir='./models',
         name='default',
         new=False,
