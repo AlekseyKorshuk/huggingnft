@@ -1082,7 +1082,7 @@ class Trainer():
     def load_config(self, remote_path=None):
         config_path = self.config_path
         if remote_path is not None:
-            config_path = remote_path
+            config_path = Path(remote_path)
         config = self.config() if not config_path.exists() else json.loads(config_path.read_text())
 
         self.image_size = config['image_size']
