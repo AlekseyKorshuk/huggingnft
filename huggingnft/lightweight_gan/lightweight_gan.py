@@ -1347,7 +1347,7 @@ class Trainer():
 
                 if self.push_to_hub:
                     with tempfile.TemporaryDirectory() as temp_dir:
-                        self.GAN.push_to_hub(temp_dir, self.repo_url, config=self.GAN.config(), skip_lfs_files=False,
+                        self.GAN.push_to_hub(temp_dir, self.repo_url, config=self.GAN.config, skip_lfs_files=False,
                                              default_model_card=TEMPLATE_LIGHTWEIGHT_CARD_PATH, model_name=self.name)
                         upload_file(path_or_fileobj=json.dumps(self.config()).encode('utf-8'),
                                     repo_id=f"{self.organization_name}/{self.name}", path_in_repo=TRAINING_CONFIG_NAME)
