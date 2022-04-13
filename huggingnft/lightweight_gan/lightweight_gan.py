@@ -1346,7 +1346,7 @@ class Trainer():
 
                 if self.push_to_hub:
                     with tempfile.TemporaryDirectory() as temp_dir:
-                        self.GAN.push_to_hub(temp_dir, self.repo_url, config=self.GAN.config, skip_lfs_files=False,
+                        self.GAN.push_to_hub(temp_dir, self.repo_url, config=self.config(), skip_lfs_files=False,
                                              default_model_card=TEMPLATE_LIGHTWEIGHT_CARD_PATH, model_name=self.name)
 
             if self.steps % self.evaluate_every == 0 or (self.steps % 100 == 0 and self.steps < 20000):
