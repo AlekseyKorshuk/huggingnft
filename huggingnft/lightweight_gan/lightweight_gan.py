@@ -1148,6 +1148,12 @@ class Trainer():
 
         transformed_dataset = dataset.with_transform(transform_images)
 
+        try:
+            transformed_dataset["train"] = transformed_dataset["train"].remove_columns(
+                ['id', 'token_metadata', 'image_original_url'])
+        except:
+            pass
+
         per_device_batch_size = math.ceil(self.batch_size / self.accelerator.num_processes)
         dataloader = DataLoader(transformed_dataset["train"], per_device_batch_size, sampler=None, shuffle=False,
                                 drop_last=True, pin_memory=True)
