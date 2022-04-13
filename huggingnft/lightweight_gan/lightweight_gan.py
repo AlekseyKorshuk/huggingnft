@@ -1080,7 +1080,7 @@ class Trainer():
     def write_config(self):
         self.config_path.write_text(json.dumps(self.config()))
 
-    def load_config(self, remote_path=None):
+    def load_config(self, remote_path=None, use_cpu=False):
         config_path = self.config_path
         if remote_path is not None:
             config_path = Path(remote_path)
@@ -1088,7 +1088,7 @@ class Trainer():
 
         self.image_size = config['image_size']
         self.transparent = config['transparent']
-        self.syncbatchnorm = config['syncbatchnorm']
+        self.syncbatchnorm = config['syncbatchnorm'] if not use_cpu else False
         self.disc_output_size = config['disc_output_size']
         self.greyscale = config.pop('greyscale', False)
         self.attn_res_layers = config.pop('attn_res_layers', [])
@@ -1434,6 +1434,35 @@ class Trainer():
         return dir_full
 
     @torch.no_grad()
+    def generate_app(self, num=0, nrow=4, checkpoint=None, types=['default', 'ema']):
+        self.GAN.eval()
+
+        latent_dim = self.GAN.latent_dim
+        dir_name = self.name + str('-generated-') + str(checkpoint)
+        dir_full = Path().absolute() / self.results_dir / dir_name
+        ext = self.image_extension
+
+        if not dir_full.exists():
+            os.mkdir(dir_full)
+
+        path = None
+        # regular
+        if 'default' in types:
+            latents = torch.randn(nrow ** 2, latent_dim, device="cpu")
+            generated_image = self.generate_(self.GAN.G, latents)
+            path = str(self.results_dir / dir_name / f'{str(num)}.{ext}')
+            save_image(generated_image, path, nrow=nrow)
+
+        # moving averages
+        if 'ema' in types:
+            latents = torch.randn(nrow ** 2, latent_dim, device="cpu")
+            generated_image = self.generate_(self.GAN.GE, latents)
+            path = str(self.results_dir / dir_name / f'{str(num)}-ema.{ext}')
+            save_image(generated_image, path, nrow=nrow)
+
+        return path
+
+    @torch.no_grad()
     def show_progress(self, num_images=4, types=['default', 'ema']):
         checkpoints = self.get_checkpoints()
         assert exists(checkpoints), 'cannot find any checkpoints to create a training progress video for'
@@ -1513,7 +1542,7 @@ class Trainer():
         return generated_images.clamp_(0., 1.)
 
     @torch.no_grad()
-    def generate_interpolation(self, num=0, num_image_tiles=8, num_steps=100, save_frames=False):
+    def generate_interpolation(self, num=0, num_image_tiles=8, num_steps=100, save_frames=False, progress_bar=None):
         self.GAN.eval()
         ext = self.image_extension
         num_rows = num_image_tiles
@@ -1527,6 +1556,7 @@ class Trainer():
 
         ratios = torch.linspace(0., 8., num_steps)
 
+        counter = 0
         frames = []
         for ratio in tqdm(ratios):
             interp_latents = slerp(ratio, latents_low, latents_high)
@@ -1539,6 +1569,9 @@ class Trainer():
                 pil_image = Image.alpha_composite(background, pil_image)
 
             frames.append(pil_image)
+            if progress_bar is not None:
+                progress_bar.progress(int(int(counter + 1)/num_steps*100))
+                counter += 1
 
         frames[0].save(str(self.results_dir / self.name / f'{str(num)}.gif'), save_all=True, append_images=frames[1:],
                        duration=80, loop=0, optimize=True)
@@ -1548,6 +1581,7 @@ class Trainer():
             folder_path.mkdir(parents=True, exist_ok=True)
             for ind, frame in enumerate(frames):
                 frame.save(str(folder_path / f'{str(ind)}.{ext}'))
+        return str(self.results_dir / self.name / f'{str(num)}.gif')
 
     def print_log(self):
         data = [
@@ -1591,13 +1625,13 @@ class Trainer():
         torch.save(save_data, self.model_name(num))
         self.write_config()
 
-    def load(self, num=-1):
+    def load(self, num=-1, use_cpu=False):
         self.load_config()
 
         model_path = self.model_name(num)
         if num == -1:
             model_path, config_path = self.get_remote_checkpoints()
-            self.load_config(config_path)
+            self.load_config(config_path, use_cpu=use_cpu)
 
             if not exists(model_path):
                 return

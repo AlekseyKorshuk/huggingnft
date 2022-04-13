@@ -4,7 +4,7 @@ from retry.api import retry_call
 from tqdm import tqdm
 from datetime import datetime
 from pathlib import Path
-from lightweight_gan import Trainer, NanException
+from huggingnft.lightweight_gan.lightweight_gan import Trainer, NanException
 
 import torch
 import torch.multiprocessing as mp

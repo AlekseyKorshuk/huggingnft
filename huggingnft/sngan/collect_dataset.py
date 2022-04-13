@@ -52,9 +52,12 @@ async def make_request(session, asset):
 
     if resp.status == 200:
         path = f'images/{asset["image_url"].replace("https://lh3.googleusercontent.com/", "")}.png'
-
-        async with aiofiles.open(path, 'wb') as f:
-            await f.write(await resp.read())
+        try:
+            async with aiofiles.open(path, 'wb') as f:
+                await f.write(await resp.read())
+        except Exception as ex:
+            print(ex)
+            return
 
 
 async def bulk_request(collection):
