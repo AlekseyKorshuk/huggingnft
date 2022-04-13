@@ -32,7 +32,7 @@ from einops import rearrange, reduce, repeat
 from datasets import load_dataset
 
 from accelerate import Accelerator, DistributedDataParallelKwargs
-from huggingface_hub import hf_hub_download, create_repo, HfFolder, whoami
+from huggingface_hub import hf_hub_download, create_repo, HfFolder, whoami, upload_file
 
 from huggingnft import TEMPLATE_LIGHTWEIGHT_CARD_PATH
 from huggingnft.huggan_mixin import HugGANModelHubMixin
@@ -44,6 +44,7 @@ from typing import Optional
 EXTS = ['jpg', 'jpeg', 'png']
 PYTORCH_WEIGHTS_NAME = 'model.pt'
 CONFIG_NAME = 'config.json'
+TRAINING_CONFIG_NAME = 'training_config.json'
 
 
 # helpers
@@ -1346,8 +1347,10 @@ class Trainer():
 
                 if self.push_to_hub:
                     with tempfile.TemporaryDirectory() as temp_dir:
-                        self.GAN.push_to_hub(temp_dir, self.repo_url, config=self.config(), skip_lfs_files=False,
+                        self.GAN.push_to_hub(temp_dir, self.repo_url, config=self.GAN.config(), skip_lfs_files=False,
                                              default_model_card=TEMPLATE_LIGHTWEIGHT_CARD_PATH, model_name=self.name)
+                        upload_file(path_or_fileobj=json.dumps(self.config()).encode('utf-8'),
+                                    repo_id=f"{self.organization_name}/{self.name}", path_in_repo=TRAINING_CONFIG_NAME)
 
             if self.steps % self.evaluate_every == 0 or (self.steps % 100 == 0 and self.steps < 20000):
                 self.evaluate(floor(self.steps / self.evaluate_every), num_image_tiles=self.num_image_tiles)
@@ -1618,7 +1621,7 @@ class Trainer():
     def get_remote_checkpoints(self):
         model_path, config_path = None, None
         try:
-            config_path = hf_hub_download(f"{self.organization_name}/{self.name}", CONFIG_NAME)
+            config_path = hf_hub_download(f"{self.organization_name}/{self.name}", TRAINING_CONFIG_NAME)
             model_path = hf_hub_download(f"{self.organization_name}/{self.name}", PYTORCH_WEIGHTS_NAME)
         except requests.exceptions.HTTPError:
             return model_path, config_path
