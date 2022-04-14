@@ -1446,6 +1446,7 @@ class Trainer():
             os.mkdir(dir_full)
 
         path = None
+        generated_image = None
         # regular
         if 'default' in types:
             latents = torch.randn(nrow ** 2, latent_dim, device="cpu")
@@ -1460,7 +1461,7 @@ class Trainer():
             path = str(self.results_dir / dir_name / f'{str(num)}-ema.{ext}')
             save_image(generated_image, path, nrow=nrow)
 
-        return path
+        return path, generated_image
 
     @torch.no_grad()
     def show_progress(self, num_images=4, types=['default', 'ema']):

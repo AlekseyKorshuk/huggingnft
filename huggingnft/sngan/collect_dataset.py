@@ -104,8 +104,8 @@ def main(args):
         "token_metadata": [],
         "image_original_url": [],
     }
-    for image in dataset["train"]["image"]:
-        name = os.path.basename(image.filename).replace(".png", "")
+    for image in images:
+        name = os.path.basename(image).replace(".png", "")
         for column_key in columns.keys():
             columns[column_key].append(nft_match[name][column_key])
     for column_key in columns.keys():
