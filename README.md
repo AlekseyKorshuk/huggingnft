@@ -122,4 +122,16 @@ Because OpenSea usually blocks any api connection, we are going to use Selenium 
 python huggingnft/datasets/collect_dataset.py --collection_name cyberkongz --use_selenium --driver_path huggingnft/datasets/chromedriver
 ```
 
+# About
+
+*Built by Aleksey Korshuk, Christian Cancedda and Hugging Face community with love ❤️ *
+
+[![Follow](https://img.shields.io/github/followers/AlekseyKorshuk?style=social)](https://github.com/AlekseyKorshuk)
+
+[![Follow](https://img.shields.io/twitter/follow/alekseykorshuk?style=social)](https://twitter.com/intent/follow?screen_name=alekseykorshuk)
+
+Star project repository:
+
+[![GitHub stars](https://img.shields.io/github/stars/AlekseyKorshuk/huggingnft?style=social)](https://github.com/AlekseyKorshuk/huggingnft)
+
 
