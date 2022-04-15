@@ -30,6 +30,5 @@ if __name__ == "__main__":
         choices=["default", "ema"],
         help="Generation type: default or ema",
     )
-
     args = parser.parse_args()
     main(args)
