@@ -124,7 +124,7 @@ python huggingnft/datasets/collect_dataset.py --collection_name cyberkongz --use
 
 # About
 
-*Built by Aleksey Korshuk, Christian Cancedda and Hugging Face community with love ❤️ *
+_Built by Aleksey Korshuk, Christian Cancedda and Hugging Face community with love_ ❤️ 
 
 [![Follow](https://img.shields.io/github/followers/AlekseyKorshuk?style=social)](https://github.com/AlekseyKorshuk)
 
