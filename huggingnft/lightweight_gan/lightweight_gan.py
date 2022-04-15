@@ -32,7 +32,7 @@ from einops import rearrange, reduce, repeat
 from datasets import load_dataset
 
 from accelerate import Accelerator, DistributedDataParallelKwargs
-from huggingface_hub import hf_hub_download, create_repo, HfFolder, whoami, upload_file
+from huggingface_hub import hf_hub_download, create_repo, HfFolder, whoami, upload_file, file_download
 
 from huggingnft import TEMPLATE_LIGHTWEIGHT_CARD_PATH
 from huggingnft.huggan_mixin import HugGANModelHubMixin
@@ -1571,7 +1571,7 @@ class Trainer():
 
             frames.append(pil_image)
             if progress_bar is not None:
-                progress_bar.progress(int(int(counter + 1)/num_steps*100))
+                progress_bar.progress(int(int(counter + 1) / num_steps * 100))
                 counter += 1
 
         frames[0].save(str(self.results_dir / self.name / f'{str(num)}.gif'), save_all=True, append_images=frames[1:],
@@ -1668,3 +1668,17 @@ class Trainer():
             return model_path, config_path
 
         return model_path, config_path
+
+
+# Load model from hub
+def load_lightweight_model(model_name):
+    file_path = file_download.hf_hub_download(
+        repo_id=model_name,
+        filename="config.json"
+    )
+    config = json.loads(open(file_path).read())
+    organization_name, name = model_name.split("/")
+    model = Trainer(**config, organization_name=organization_name, name=name)
+    model.load(use_cpu=True)
+    model.accelerator = Accelerator()
+    return model
