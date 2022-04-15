@@ -35,6 +35,7 @@ python huggingnft/lightweight_gan/generate_image.py --collection_name cryptopunk
 ```bash
 python huggingnft/lightweight_gan/generate_interpolation.py --collection_name cryptopunks --nrows 8 --num_steps 100
 ```
+
 ### Python code
 
 #### Image
@@ -75,9 +76,50 @@ gif_saved_path = model.generate_interpolation(
 )
 ```
 
+## How to train
+
+You can easily add new model for any OpenSea collection. Note that it is important to collect dataset before training — check the corresponding section.
+
+### Google Colab
+
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/AlekseyKorshuk/huggingnft/blob/main/huggingnft/lightweight_gan/train.ipynb)
+
+Follow this link: [link](https://colab.research.google.com/github/AlekseyKorshuk/huggingnft/blob/main/huggingnft/lightweight_gan/train.ipynb)
+
+### Terminal
+
+You can now run script as follows:
+
+```bash
+accelerate config
+```
+
+=> Accelerate will ask what kind of environment you'd like to run your script on, simply answer the questions being asked. Next:
+
+```bash
+accelerate launch huggingnft/lightweight_gan/train.py \
+  --wandb \
+  --image_size 256 \
+  --num_train_steps 10000 \
+  --save_every 1000 \
+  --dataset_name huggingnft/cyberkongz \
+  --push_to_hub \
+  --name cyberkongz \
+  --organization_name huggingnft
+```
+
 ## Collection2Collection
 
+TODO
 
-# How to train
+
+
+# Collect dataset
+
+Because OpenSea usually blocks any api connection, we are going to use Selenium to parse data. So first download `chromedriver` from [here](https://chromedriver.chromium.org/downloads) and pass corresponding path:
+
+```bash
+python huggingnft/datasets/collect_dataset.py --collection_name cyberkongz --use_selenium --driver_path huggingnft/datasets/chromedriver
+```
 
 
