@@ -11,15 +11,17 @@ checkpoint!
 
 ![Example](https://raw.githubusercontent.com/AlekseyKorshuk/cdn/main/huggingnft/giphy.gif)
 
+> This preview does not show the real power of this project because of a strong decrease in video quality! Otherwise, the file size would exceed all limits.
+
 # How to generate
 
-## Images and Interpolation
-
-### Space
+## Space
 
 You can easily use Space: [link](https://huggingface.co/spaces/AlekseyKorshuk/huggingnft)
 
 [![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://huggingface.co/spaces/AlekseyKorshuk/huggingnft)
+
+## Images and Interpolation
 
 ### Google Colab
 
