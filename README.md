@@ -7,6 +7,10 @@
 **Hugging NFT** — generate NFT or train new model in just few clicks! Train as much as you can, others will resume from
 checkpoint!
 
+---
+
+![Example](https://raw.githubusercontent.com/AlekseyKorshuk/cdn/main/huggingnft/giphy.gif)
+
 # How to generate
 
 ## Images and Interpolation
