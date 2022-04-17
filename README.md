@@ -11,6 +11,8 @@ checkpoint!
 
 ![Example](https://raw.githubusercontent.com/AlekseyKorshuk/cdn/main/huggingnft/giphy.gif)
 
+🤗 More examples are available here: [EXAMPLES.md](https://github.com/AlekseyKorshuk/huggingnft/blob/main/docs/EXAMPLES.md).
+
 > This preview does not show the real power of this project because of a strong decrease in video quality! Otherwise, the file size would exceed all limits.
 
 # How to generate
