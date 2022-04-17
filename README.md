@@ -19,7 +19,7 @@ checkpoint!
 
 ## Space
 
-You can easily use Space: [link](https://huggingface.co/spaces/AlekseyKorshuk/huggingnft)
+You can easily use Space: [link](https://huggingface.co/spaces/huggan/huggingnft)
 
 [![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://huggingface.co/spaces/AlekseyKorshuk/huggingnft)
 
