@@ -18,6 +18,8 @@ Given two image domains A and B, the following components are trained end2end to
 - A generator B to A, named G_BA conditioned on an image from B   
 - A domain classifier D_A, associated with G_AB   
 - A domain classifier D_B, associated with G_BA    
+
+
 At inference time, G_AB or G_BA are relevant to translate images, respectively A to B or  B to A.  
 In the general setting, this technique provides style transfer functionalities between the selected image domains A and B.   
 This allows to obtain a generated translation by G_AB, of an image from domain A that resembles the distribution of the images from domain B, and viceversa for the generator G_BA.  
@@ -170,7 +172,7 @@ The following configuration has been kept fixed for all translation models:
 [Boreapeyachtclub to mutant-ape-yacht-club](https://wandb.ai/chris1nexus/experiments--my_paperspace_boredapeyachtclub__2__mutant-ape-yacht-club--11/reports/CycleGAN-training-report--VmlldzoxODUxNzg4?accessToken=jpyviwn7kdf5216ycrthwp6l8t3heb0lt8djt7dz12guu64qnpdh3ekecfcnoahu)
 
 
-#### ## Generated Images
+#### Generated Images
 
 In the provided images, row0 and row2 represent real images from the respective collections.  
 Row1 is the translation of the immediate above images in row0 by means of the G_AB translation model.  
@@ -182,7 +184,7 @@ Row3 is the translation of the immediate above images in row2 by means of the G_
 
 
 ### References
-
+```bibtex
 @misc{https://doi.org/10.48550/arxiv.1703.10593,
   doi = {10.48550/ARXIV.1703.10593},
   
@@ -200,7 +202,7 @@ Row3 is the translation of the immediate above images in row2 by means of the G_
   
   copyright = {arXiv.org perpetual, non-exclusive license}
 }
-
+```
 ### BibTeX entry and citation info
 
 ```bibtex
