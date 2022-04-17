@@ -120,9 +120,74 @@ accelerate launch huggingnft/lightweight_gan/train.py \
 ```
 
 ## Collection2Collection
+The collection2collection framework allows to create unpaired image translation models between any pair of NFT collections that can be downloaded from Opensea.   
+In the broadest sense, it allows to apply the style of a collection to that of another one, so as to obtain new and diverse collections of never before seen NFTs.  
 
-TODO
 
+### Jupyter notebook
+The training procedure is provided in a simplified format in the jupyter notebook 
+[train_cyclegans.ipynb](https://github.com/AlekseyKorshuk/huggingnft/blob/main/huggingnft/cyclegan/train_cyclegans.ipynb)    
+
+here, hyperparameter optimization is available by adding multiple parameters to each list of hyperparameters shown in the notebook.   
+Furthermore, a section in such notebook is dedicated to the training of all possible translations by means of the datasets provided in the [huggingnft organization page](https://huggingface.co/huggingnft)
+
+
+### Google Colab
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/AlekseyKorshuk/huggingnft/blob/main/huggingnft/cyclegan/train_cyclegans.ipynb)
+
+
+
+### Terminal
+Firstly, after cloning [this repository](https://github.com/AlekseyKorshuk/huggingnft.git), run   
+```bash
+cd huggingnft
+pip install .
+```
+
+Then, set the wandb API_KEY if you wish to log all results to wandb with:   
+```bash
+wandb login API_KEY
+```
+
+If you plan on uploading the resulting models to an huggingface repository, make sure to also login with your huggingface API_KEY with the following command:   
+```bash
+huggingface-cli login 
+```
+
+Before starting the model training, it is necessary to configure the accelerate environment according to your available computing resource with the command:  
+```bash
+accelerate config
+```
+
+After this, everything is setup to start training the collection2collection models
+
+```bash
+accelerate launch --config_file ~/.cache/huggingface/accelerate/default_config.yaml \
+        train.py \
+        --batch_size 8 \
+        --beta1 0.5 \
+        --beta2 0.999 \
+        --channels 3 \ 
+        --checkpoint_interval 5 \
+        --decay_epoch 80 \
+        --epoch 0 \
+        --image_size 256 \
+        --lambda_cyc 10.0 \
+        --lambda_id 5.0 \ 
+        --lr 0.0002 \
+        --mixed_precision no \
+        --model_name cyclegan \
+        --n_residual_blocks 9 \
+        --num_epochs 200 \
+        --num_workers 8 \
+        --organization_name huggingnft \
+        --push_to_hub \
+        --sample_interval 10 \
+        --source_dataset_name huggingnft/azuki \ 
+        --target_dataset_name huggingnft/boredapeyachtclub \
+        --wandb \
+        --output_dir experiments
+```
 # Collect dataset
 
 Because OpenSea usually blocks any api connection, we are going to use Selenium to parse data. So first

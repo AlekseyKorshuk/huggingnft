@@ -16,3 +16,4 @@ adabelief-pytorch
 pytorch-fid
 fire
 retry
+scikit-learn
