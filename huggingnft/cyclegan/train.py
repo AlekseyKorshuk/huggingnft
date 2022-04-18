@@ -14,15 +14,15 @@ from torchvision.utils import save_image, make_grid
 
 from torch.utils.data import DataLoader
 
-from huggingnft.cyclegan.cyglegan import GeneratorResNet, Discriminator
-from huggingnft.cyclegan.cyglegan import weights_init_normal
+from huggingnft.cyclegan.cyclegan import GeneratorResNet, Discriminator
+from huggingnft.cyclegan.cyclegan import weights_init_normal
 
 from huggingnft.cyclegan.utils import ReplayBuffer, LambdaLR
 
 from datasets import load_dataset
 
 from accelerate import Accelerator
-from huggingnft.cyclegan.cyglegan import TEMPLATE_CYCLEGAN_CARD_PATH
+from huggingnft.cyclegan.cyclegan import TEMPLATE_CYCLEGAN_CARD_PATH
 import torch.nn as nn
 import torch
 
