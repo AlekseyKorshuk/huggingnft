@@ -61,13 +61,6 @@ def parse_args(args=None):
             action="store_true",
             help="Whether to push the model to the HuggingFace hub after training.",
             )
-
-    parser.add_argument(
-        "--model_name",
-        required="--push_to_hub" in sys.argv,
-        type=str,
-        help="Name of the model on the hub.",
-    )
     parser.add_argument("--wandb", action="store_true", help="If passed, will log to Weights and Biases.")
 
     parser.add_argument(
