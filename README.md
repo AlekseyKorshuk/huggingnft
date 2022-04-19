@@ -190,6 +190,52 @@ accelerate launch --config_file ~/.cache/huggingface/accelerate/default_config.y
         --wandb \
         --output_dir experiments
 ```
+### Generate collection2collection examples
+Head to the huggingnft cyclegan subfolder and utilize the generate.py script to create NFTs with the collection2collection models at [huggingNFT](https://huggingface.co/spaces/huggan/huggingnft)
+
+#### Generate one NFT
+
+To generate a collection of num_images NFTs which are the outputs of the generation+translation pipeline do:
+```bash
+python3 generate.py --choice generate \
+    --num_tiles 1 \
+    --num_images 1 \
+    --format png
+```
+
+####  Generate multiple NFTs 
+To generate a gif containing pairs of generated and the corresponding translated NFTs (both do not exist and are the predictions of GANs), set --format png to save each image separately instead of a condensed gif
+```bash
+python3 generate.py \
+    --choice generate \
+    --num_tiles 1 \ 
+    --num_images 100 \
+    --format gif \
+    --pairs
+```
+
+#### Visualize multiple NFTs, side by side comparison of generated and resulting translation 
+To generate a gif containing pairs of generated and the corresponding translated NFTs (both do not exist and are the predictions of GANs)   this command allows to observe how contiguous changes in the latent space of the upstream GAN which generates the samples, affect the following translation by the CycleGAN  
+
+Set --format png to save each image separately instead of a condensed gif
+```bash
+python3 generate.py --choice interpolate \
+    --num_tiles 16 \
+    --num_images 100\ 
+    --format gif\
+     --pairs
+```
+#### Visualize multiple NFTs, only the resulting translation
+
+Remove the --pairs argument in order to visualize only the result of the translation
+```bash
+python3 generate.py --choice interpolate \
+    --num_tiles 16 \
+    --num_images 100\ 
+    --format gif\
+```     
+
+
 # Collect dataset
 
 Because OpenSea usually blocks any api connection, we are going to use Selenium to parse data. So first
@@ -213,8 +259,10 @@ notebook: [link](https://colab.research.google.com/github/AlekseyKorshuk/hugging
 _Built by Aleksey Korshuk, Christian Cancedda and Hugging Face community with love_ ❤️
 
 [![Follow](https://img.shields.io/github/followers/AlekseyKorshuk?style=social)](https://github.com/AlekseyKorshuk)
+[![Follow](https://img.shields.io/github/followers/chris1nexus?style=social)](https://github.com/Chris1nexus)
 
 [![Follow](https://img.shields.io/twitter/follow/alekseykorshuk?style=social)](https://twitter.com/intent/follow?screen_name=alekseykorshuk)
+[![Follow](https://img.shields.io/twitter/follow/chris_cancedda?style=social)](https://twitter.com/intent/follow?screen_name=chris_cancedda)
 
 Star project repository:
 
