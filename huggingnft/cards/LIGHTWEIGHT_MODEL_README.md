@@ -6,7 +6,6 @@ tags:
 - gan
 - image
 - images
-task: 
 - unconditional-image-generation
 datasets:
 - huggingnft/USERNAME
