@@ -524,7 +524,7 @@ class Generator(nn.Module):
 
     def forward(self, x):
         x = rearrange(x, 'b c -> b c () ()')
-        x = self.initial_conv(x)
+        x = self.initial_conv(x.cpu())
         x = F.normalize(x, dim=1)
 
         residuals = dict()
